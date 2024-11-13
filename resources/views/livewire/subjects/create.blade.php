@@ -1,64 +1,50 @@
 <?php
 
 use Livewire\Volt\Component;
-use App\Models\ClassForm;
+use App\Models\Subject;
 use Livewire\Attributes\Validate;
 
 new class extends Component {
+    #[Validate('required|string|max:255')]
     public $name = '';
 
     public function submit(): void
     {
-        // Validate the class name format first
-        $this->validate([
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-                // Custom validation function
-                function ($attribute, $value, $fail) {
-                    // Check format
-                    if (!preg_match('/^Form\s[1-4]$/i', $value)) {
-                        $fail('The ' . $attribute . ' must be in the format "Form 1", "Form 2", "Form 3", or "Form 4".');
-                    }
-                },
-            ],
-        ]);
-
-        // Convert input name to lowercase for a case-insensitive comparison
+        //Convert input name to lowercase for a case-insensitive comparison
         $nameLowercase = strtolower($this->name);
 
-        // Check if the class name already exists in the database
-        $classExists = ClassForm::whereRaw('LOWER(name) = ?', [$nameLowercase])->exists();
+        // Check if the subject name already exists in the database
+        $subjectExists = Subject::whereRaw('LOWER(name) = ?', [$nameLowercase])->exists();
 
-        if ($classExists) {
-            session()->flash('error', 'Class name already exists in the database.');
-            return; // Stop the execution
+        if ($subjectExists) {
+            session()->flash('error', 'Subject name already exists in the database.');
+        } else {
+            //Perform validation
+            $validatedData = $this->validate();
+
+            //Since "name" validation ovverrides the default "required" validation, we need to manually check if "name" is empty
+            $validatedData['name'] = $this->name;
+
+            //Create the subject to DB
+            Subject::create($validatedData);
+
+            //Flash success message(cara livewire)
+            $this->dispatch('success', message: 'Subject created successfully.');
+
+            //Reset input field
+            $this->name = '';
         }
-
-        // Save the class name to the database
-        ClassForm::create([
-            'name' => $this->name,
-        ]);
-
-        // Show a success message
-        //message ni untuk pass ke view alpinejs
-        //Flash success message(cara livewire)
-        $this->dispatch('success', message: 'Class created successfully.');
-
-        // Reset the form
-        $this->name = '';
     }
 }; ?>
 
 <div>
     <div class="container p-6 mt-5 bg-white rounded-lg shadow-md">
-        <h2 class="text-xl font-bold">Add Class</h2>
+        <h2 class="text-xl font-bold">Add Subject</h2>
 
         <form wire:submit.prevent="submit" class="mt-4">
             <input type="text" id="name"
                 class="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 @error('name') border-red-500 @enderror"
-                wire:model="name" placeholder="Enter class name">
+                wire:model="name" placeholder="Enter subject name">
 
             @error('name')
                 <div class="mt-1 text-red-500">
