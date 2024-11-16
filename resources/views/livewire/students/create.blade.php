@@ -35,6 +35,7 @@ new class extends Component {
                 'required',
                 function ($attribute, $value, $fail) {
                     $selectedStream = Stream::find($value);
+                    // $selectedStream->name, 0, 0 yang ni dia find ID yg auto increment kat DB tu
                     if ($selectedStream && substr($selectedStream->name, 5, 1) != $this->class) {
                         $fail('The selected stream does not match the form.');
                     }
@@ -62,11 +63,11 @@ new class extends Component {
 
         //Create a new student record
         $student = Student::create([
-            'student_name' => $this->student_name,
+            'name' => $this->student_name,
             'adm_no' => $this->adm_no,
             // 'term' => $this->term,
             'stream_id' => $this->stream_id,
-            'form' => $formValue,
+            'form' => $formValue, // Ensure this is a valid `id` from `class_forms`
             'form_sequence_number' => $formSequenceNumber,
         ]);
 
