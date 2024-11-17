@@ -5,6 +5,7 @@ use App\Http\Controllers\StreamController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\ClassFormController;
+use App\Http\Controllers\ExamController;
 
 Route::view('/', 'welcome');
 
@@ -17,12 +18,16 @@ Route::get('subjects', [SubjectController::class, 'index'])
     ->name('subjects');
 
 Route::get('streams', [StreamController::class, 'index'])
-->middleware(['auth', 'verified'])
-->name('streams');
+    ->middleware(['auth', 'verified'])
+    ->name('streams');
 
 Route::get('students', [StudentController::class, 'index'])
-->middleware(['auth', 'verified'])
-->name('students');
+    ->middleware(['auth', 'verified'])
+    ->name('students');
+
+Route::get('exams', [ExamController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('exams');
 
 
 Route::view('dashboard', 'dashboard')
@@ -33,4 +38,4 @@ Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
