@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\StudentDetailController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StreamController;
 use App\Http\Controllers\StudentController;
@@ -29,6 +30,9 @@ Route::get('exams', [ExamController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('exams');
 
+    Route::get('studentdetails', [StudentDetailController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('studentdetails');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])

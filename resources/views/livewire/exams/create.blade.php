@@ -44,7 +44,7 @@ new class extends Component {
     {
         //Fetch the student details including form and stream
         // $this->studentDetails = Student::where('adm_no', $adm_no)->with('stream', 'classForm')->first();
-        $this->studentDetails = Student::where('adm_no', $adm_no)->with('stream', 'form')->first();
+        $this->studentDetails = Student::where('adm_no', $adm_no)->with('stream', 'class')->first();
         // dd($this->studentDetails);
     }
 
@@ -97,7 +97,7 @@ new class extends Component {
                     <option value="">Select a Student</option>
                     @foreach ($students as $student)
                         <option value="{{ $student->adm_no }}">
-                            {{ $student->name }} - {{ $student->adm_no }} - ({{ $student->form }} -
+                            {{ $student->name }} - {{ $student->adm_no }} - ({{ $student->classForm->name }} -
                             {{ $student->stream->name }})
                         </option>
                     @endforeach
