@@ -6,6 +6,7 @@ use App\Models\Exam;
 use App\Models\Stream;
 use App\Models\ClassForm;
 use App\Models\StudentDetail;
+use App\Models\StudentActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -41,5 +42,10 @@ class Student extends Model
     public function studentdetails(): HasOne
     {
         return $this->hasOne(StudentDetail::class);
+    }
+
+    public function activity(): HasOne
+    {
+        return $this->hasOne(StudentActivity::class);
     }
 }
