@@ -71,6 +71,9 @@ new class extends Component {
             'form_sequence_number' => $formSequenceNumber,
         ]);
 
+        //Dispatch an event to notify the student.list component that a new student has been created
+        $this->dispatch('student-created');
+
         //show success message
         $this->dispatch('success', message: 'Student created successfully');
 
