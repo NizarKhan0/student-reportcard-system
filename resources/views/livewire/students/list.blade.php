@@ -9,10 +9,17 @@ use Livewire\Attributes\On;
 new class extends Component {
     use WithPagination;
 
+    //Public properties
     public $form = 1;
     public $searchTerm = '';
     public $sortColumn = 'name';
     public $sortDirection = 'asc';
+
+    //Hold student instance to be edited
+    public ?Student $editing = null;
+    //Hold student for the selected form
+    public $selectedStudentId = null;
+
 
     public function mount(): void
     {
@@ -82,6 +89,37 @@ new class extends Component {
             ->paginate(10);
     }
 
+    //Open the modal
+    public function openModal($id)
+    {
+        $this->selectedStudentId = $id;
+    }
+
+    //Edit the student
+    public function edit(Student $student)
+    {
+        //Set the editing property to the selected student
+        //editing tu dari apa yang kita declare kat atas(public properties)
+        $this->editing = $student;
+        //Get the student for the selected form
+        $this->getStudents();
+    }
+
+    #[On('student-updated')]
+    public function disableEditing()
+    {
+        //Set the editing property to null
+        $this->editing = null;
+        //Get the student for the selected form
+        $this->getStudents();
+    }
+
+    //Close the modal
+    public function closeModal()
+    {
+        $this->selectedStudentId = null;
+    }
+
     //return the students and the form
     public function with(): array
     {
@@ -94,15 +132,15 @@ new class extends Component {
 
 <div>
 
-    <div class="p-6 bg-gray-100 min-h-screen">
-        <div class="container mx-auto bg-white shadow-lg rounded-lg p-6">
+    <div class="min-h-screen p-6 bg-gray-100">
+        <div class="container p-6 mx-auto bg-white rounded-lg shadow-lg">
             <!-- Filters Section -->
-            <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+            <div class="flex flex-col items-center justify-between mb-6 md:flex-row">
                 <!-- Select Form -->
-                <div class="w-full md:w-1/3 mb-4 md:mb-0">
-                    <label for="form" class="block font-medium text-sm text-gray-700">Select Form</label>
+                <div class="w-full mb-4 md:w-1/3 md:mb-0">
+                    <label for="form" class="block text-sm font-medium text-gray-700">Select Form</label>
                     <select name="form" id="form" wire:model.live="form"
-                        class="form-select mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:border-indigo-400 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                        class="w-full mt-1 border-gray-300 rounded-lg shadow-sm form-select focus:border-indigo-400 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                         <option value="1">Form 1</option>
                         <option value="2">Form 2</option>
                         <option value="3">Form 3</option>
@@ -111,41 +149,41 @@ new class extends Component {
                 </div>
 
                 <!-- Search Input -->
-                <div class="w-full md:w-1/3 mb-4 md:mb-0">
+                <div class="w-full mb-4 md:w-1/3 md:mb-0">
                     <input type="text" wire:model.live="searchTerm"
-                        class="form-input w-full border-gray-300 rounded-lg shadow-sm focus:border-indigo-400 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        class="w-full border-gray-300 rounded-lg shadow-sm form-input focus:border-indigo-400 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                         placeholder="Search by name">
                 </div>
             </div>
 
             <!-- Success Message -->
             @if (session()->has('message'))
-                <div class="mb-4 text-sm text-green-700 bg-green-100 border border-green-400 rounded-lg p-3">
+                <div class="p-3 mb-4 text-sm text-green-700 bg-green-100 border border-green-400 rounded-lg">
                     {{ session('message') }}
                 </div>
             @endif
 
             <!-- Table Section -->
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+                <table class="min-w-full border border-gray-200 divide-y divide-gray-200 rounded-lg">
                     <thead class="bg-gray-100">
                         <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">
+                            <th scope="col" class="px-6 py-3 text-xs font-medium text-left text-gray-600 uppercase">
                                 ID
                             </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">
+                            <th scope="col" class="px-6 py-3 text-xs font-medium text-left text-gray-600 uppercase">
                                 Name
                             </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">
+                            <th scope="col" class="px-6 py-3 text-xs font-medium text-left text-gray-600 uppercase">
                                 Admission Number
                             </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">
+                            <th scope="col" class="px-6 py-3 text-xs font-medium text-left text-gray-600 uppercase">
                                 Stream
                             </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">
+                            <th scope="col" class="px-6 py-3 text-xs font-medium text-left text-gray-600 uppercase">
                                 Form
                             </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase">
+                            <th scope="col" class="px-6 py-3 text-xs font-medium text-left text-gray-600 uppercase">
                                 Action
                             </th>
                         </tr>
@@ -168,13 +206,40 @@ new class extends Component {
                                 <td class="px-6 py-4 text-sm text-gray-900">
                                     {{ $student->form }}
                                 </td>
-                                <td class="px-6 py-4 text-sm text-gray-900 flex gap-3">
-                                    <a href="#" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                                <td class="flex gap-3 px-6 py-4 text-sm text-gray-900">
+                                    <button wire:click="openModal({{ $student->id }})" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</button>
                                     <button wire:click="confirmDelete({{ $student->id }})"
                                         class="text-red-600 hover:text-red-900">Delete</button>
                                     <a href="#" class="text-blue-600 hover:text-blue-900">View Report Card</a>
                                 </td>
                             </tr>
+
+                            {{-- select student untuk edit --}}
+                            <div>
+                                @if($selectedStudentId === $student->id)
+                                    <div class="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-75">
+                                        <div class="w-1/3 bg-white rounded-lg shadow-lg">
+                                            <div class="px-4 py-2 font-bold text-white bg-indigo-600 rounded-t-lg">
+                                                {{ __('Edit Student') }} - {{ $student->name }}
+                                            </div>
+                                            <div class="p-4">
+                                                <form wire:submit="updateStudent">
+                                                    <div class="px-4 pt-5 pb-4 bg-gray sm:pb-4">
+                                                        {{-- unutk render student edit livewire component --}}
+                                                        @livewire('students.edit', ['id' => $student->id])
+                                                    </div>
+                                                    <div class="flex justify-end">
+                                                        <button wire:click="closeModal()" class="px-4 py-2 mr-2 text-white bg-gray-500 rounded-md hover:bg-gray-600">
+                                                            {{ __('Cancel') }}
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+
                         @endforeach
                     </tbody>
                 </table>
