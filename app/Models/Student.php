@@ -34,7 +34,7 @@ class Student extends Model
         return $this->belongsTo(ClassForm::class, 'form', 'id');
     }
 
-    public function exam(): HasMany
+    public function exams(): HasMany
     {
         return $this->hasMany(Exam::class);
     }

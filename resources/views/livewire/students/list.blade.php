@@ -210,7 +210,7 @@ new class extends Component {
                                     <button wire:click="openModal({{ $student->id }})" class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</button>
                                     <button wire:click="confirmDelete({{ $student->id }})"
                                         class="text-red-600 hover:text-red-900">Delete</button>
-                                    <a href="#" class="text-blue-600 hover:text-blue-900">View Report Card</a>
+                                    <a href="{{ route('reports', $student->id) }}" class="text-blue-600 hover:text-blue-900">View Report Card</a>
                                 </td>
                             </tr>
 

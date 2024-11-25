@@ -1,12 +1,13 @@
 <?php
 
-use App\Http\Controllers\StudentDetailController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ExamController;
 use App\Http\Controllers\StreamController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\ClassFormController;
-use App\Http\Controllers\ExamController;
+use App\Http\Controllers\ReportCardController;
+use App\Http\Controllers\StudentDetailController;
 use App\Http\Controllers\SchoolSettingsController;
 use App\Http\Controllers\StudentActivityController;
 
@@ -40,9 +41,13 @@ Route::get('studentactivities', [StudentActivityController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('studentactivities');
 
-    Route::get('schoolsettings', [SchoolSettingsController::class, 'index'])
+Route::get('schoolsettings', [SchoolSettingsController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('schoolsettings');
+
+Route::get('/reports/{studentId}', [ReportCardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('reports');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
